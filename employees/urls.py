@@ -23,7 +23,7 @@ urlpatterns = [
     path(
         "employees-with-details/",
         EmployeeWithPositionAndDepartmentListView.as_view(),
-        name="employee-list-with-details",
-    ),  # Получить список сотрудников с должностью и отделом
+        name="employees-list-with-details",
+    ),  # Получить список сотрудников с должностями и отделами
     path("employee/add/", EmployeeCreateView.as_view(), name="employee-add"),
-]  # Добавить сотрудника на существующую должность в отдел
+]  # Добавить сотрудника на существующую должность в существующий отдел
