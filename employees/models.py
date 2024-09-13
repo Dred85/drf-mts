@@ -1,28 +1,75 @@
 from django.db import models
 
+NULLABLE = {"blank": True, "null": True}
+
+
 class Employee(models.Model):
-    id = models.AutoField(primary_key=True)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
+    """Модель, описывающая имя и фамилию сотрудника"""
+
+    employee_id = models.AutoField(primary_key=True)
+    name = models.CharField(
+        max_length=100,
+        verbose_name="Имя сотрудника",
+        help_text="Укажите имя сотрудника",
+        **NULLABLE,
+    )
+    surname = models.CharField(
+        max_length=100,
+        verbose_name="Фамилия сотрудника",
+        help_text="Укажите фамилию сотрудника",
+    )
+
+    class Meta:
+        verbose_name = "Сотрудник"
+        verbose_name_plural = "Сотрудники"
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.name} {self.surname}"
+
 
 class Position(models.Model):
-    id = models.AutoField(primary_key=True)
-    position = models.CharField(max_length=100)
+    """Модель, описывающая должность сотрудника"""
+
+    employee_id = models.AutoField(primary_key=True)
+    position = models.CharField(
+        max_length=150,
+        verbose_name="Должность сотрудника",
+        help_text="Укажите должность сотрудника",
+    )
+
+    class Meta:
+        verbose_name = "Должность"
+        verbose_name_plural = "Должности"
 
     def __str__(self):
         return self.position
 
+
 class Department(models.Model):
-    id = models.AutoField(primary_key=True)
-    department = models.CharField(max_length=100)  # Название
-    position = models.CharField(max_length=100)  # Должность
-    last_name = models.CharField(max_length=100)  # Фамилия
+    """Модель, описывающая отдел, где работает сотрудник"""
+
+    department = models.CharField(
+        max_length=150,
+        verbose_name="Название департамента",
+        help_text="Укажите название департамента",
+    )  # Название департамента
+
+    position = models.CharField(
+        max_length=150,
+        verbose_name="Должность сотрудника",
+        help_text="Укажите должность сотрудника",
+    )  # Должность сотрудника
+
+    surname = models.CharField(
+        max_length=150,
+        verbose_name="Фамилия сотрудника",
+        help_text="Укажите фамилию сотрудника",
+    )  # Фамилия сотрудника
 
     class Meta:
-        unique_together = ('name', 'last_name')
+        verbose_name = "Отдел"
+        verbose_name_plural = "Отделы"
+        unique_together = ("position", "surname")  # Уникальная связь должность-фамилия
 
     def __str__(self):
-        return f"{self.department} - {self.last_name}"
+        return f"{self.department}:{self.position} - {self.surname}"
