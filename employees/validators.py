@@ -1,10 +1,14 @@
 from rest_framework.exceptions import ValidationError
-from .models import Employee, Position, Department
+
+from .models import Department, Employee, Position
+
 
 def validate_employee_data(name, surname, position_data, department_data):
     # Проверка на существование сотрудника с той же комбинацией имени и фамилии
     if Employee.objects.filter(name=name, surname=surname).exists():
-        raise ValidationError(f"Сотрудник с именем {name} и фамилией {surname} уже существует.")
+        raise ValidationError(
+            f"Сотрудник с именем {name} и фамилией {surname} уже существует."
+        )
 
     # Проверка на существование должности
     position = Position.objects.filter(position=position_data).first()

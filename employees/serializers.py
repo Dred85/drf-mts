@@ -101,11 +101,19 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
         employee = Employee.objects.create(**validated_data)
 
         # Проверка на существование записи в таблице должностей
-        if not Position.objects.filter(position=position_data, employee_id=employee.employee_id).exists():
-            Position.objects.create(position=position_data, employee_id=employee.employee_id)
+        if not Position.objects.filter(
+            position=position_data, employee_id=employee.employee_id
+        ).exists():
+            Position.objects.create(
+                position=position_data, employee_id=employee.employee_id
+            )
 
         # Проверка на существование записи в таблице отделов
-        if not Department.objects.filter(department=department_data, position=position_data, surname=surname).exists():
-            Department.objects.create(department=department_data, position=position_data, surname=surname)
+        if not Department.objects.filter(
+            department=department_data, position=position_data, surname=surname
+        ).exists():
+            Department.objects.create(
+                department=department_data, position=position_data, surname=surname
+            )
 
         return employee

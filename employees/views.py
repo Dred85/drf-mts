@@ -3,10 +3,10 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from .models import Department, Employee, Position
-from .serializers import (DepartmentSerializer, EmployeeDetailSerializer,
-                          EmployeeSerializer,
+from .serializers import (DepartmentSerializer, EmployeeCreateSerializer,
+                          EmployeeDetailSerializer, EmployeeSerializer,
                           EmployeeWithPositionAndDepartmentSerializer,
-                          PositionSerializer, EmployeeCreateSerializer)
+                          PositionSerializer)
 
 
 class EmployeeListView(generics.ListAPIView):
@@ -30,7 +30,7 @@ class DepartmentListView(generics.ListAPIView):
 
     def get_queryset(self):
         # Возвращаем только уникальные отделы
-        return Department.objects.all().distinct('department')
+        return Department.objects.all().distinct("department")
 
 
 class EmployeeDetailView(generics.RetrieveAPIView):
@@ -38,7 +38,7 @@ class EmployeeDetailView(generics.RetrieveAPIView):
 
     serializer_class = EmployeeDetailSerializer
     queryset = Employee.objects.all()
-    lookup_field = 'employee_id'
+    lookup_field = "employee_id"
 
 
 class EmployeeWithPositionAndDepartmentListView(generics.ListAPIView):
