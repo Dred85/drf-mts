@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from .models import Department, Employee, Position
+from .validators import validate_employee_data
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -71,6 +72,7 @@ class EmployeeWithPositionAndDepartmentSerializer(serializers.ModelSerializer):
         except Department.DoesNotExist:
             return None
 
+
 class EmployeeCreateSerializer(serializers.ModelSerializer):
     position = serializers.CharField(write_only=True)
     department = serializers.CharField(write_only=True)
@@ -85,19 +87,8 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
         position_data = data.get("position")
         department_data = data.get("department")
 
-        # Проверка на существование сотрудника с той же комбинацией имени и фамилии
-        if Employee.objects.filter(name=name, surname=surname).exists():
-            raise ValidationError(f"Сотрудник с именем {name} и фамилией {surname} уже существует.")
-
-        # Проверка на существование должности
-        position = Position.objects.filter(position=position_data).first()
-        if not position:
-            raise ValidationError({"position": "Указана несуществующая должность."})
-
-        # Проверка на существование отдела
-        department = Department.objects.filter(department=department_data).first()
-        if not department:
-            raise ValidationError({"department": "Указан несуществующий отдел."})
+        # Вызываю валидатор из внешнего модуля
+        validate_employee_data(name, surname, position_data, department_data)
 
         return data
 
