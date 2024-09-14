@@ -17,7 +17,7 @@ class EmployeeListView(generics.ListAPIView):
 class PositionListView(generics.ListAPIView):
     """Get - Получить список всех должностей из таблицы: Position"""
 
-    queryset = Position.objects.all()
+    queryset = Position.objects.all().distinct("position")
     serializer_class = PositionSerializer
 
 
