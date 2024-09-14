@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from .models import Department, Employee, Position
 from .validators import validate_employee_data
@@ -31,7 +30,8 @@ class EmployeeDetailSerializer(serializers.ModelSerializer):
         model = Employee
         fields = ["employee_id", "name", "surname", "position", "department"]
 
-    def get_position(self, obj):
+    @staticmethod
+    def get_position(obj):
         try:
             # Используем filter для получения всех позиций сотрудника
             position = Position.objects.filter(employee_id=obj.employee_id).first()
@@ -39,7 +39,8 @@ class EmployeeDetailSerializer(serializers.ModelSerializer):
         except Position.DoesNotExist:
             return None
 
-    def get_department(self, obj):
+    @staticmethod
+    def get_department(obj):
         try:
             # Используем filter вместо get для получения всех отделов по фамилии
             department = Department.objects.filter(surname=obj.surname).first()
@@ -56,7 +57,8 @@ class EmployeeWithPositionAndDepartmentSerializer(serializers.ModelSerializer):
         model = Employee
         fields = ["employee_id", "name", "surname", "position", "department"]
 
-    def get_position(self, obj):
+    @staticmethod
+    def get_position(obj):
         try:
             # Используем filter для получения всех позиций сотрудника
             position = Position.objects.filter(employee_id=obj.employee_id).first()
@@ -64,7 +66,8 @@ class EmployeeWithPositionAndDepartmentSerializer(serializers.ModelSerializer):
         except Position.DoesNotExist:
             return None
 
-    def get_department(self, obj):
+    @staticmethod
+    def get_department(obj):
         try:
             # Используем filter вместо get для получения всех отделов по фамилии
             department = Department.objects.filter(surname=obj.surname).first()
@@ -102,7 +105,7 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
 
         # Проверка на существование записи в таблице должностей
         if not Position.objects.filter(
-            position=position_data, employee_id=employee.employee_id
+                position=position_data, employee_id=employee.employee_id
         ).exists():
             Position.objects.create(
                 position=position_data, employee_id=employee.employee_id
@@ -110,7 +113,7 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
 
         # Проверка на существование записи в таблице отделов
         if not Department.objects.filter(
-            department=department_data, position=position_data, surname=surname
+                department=department_data, position=position_data, surname=surname
         ).exists():
             Department.objects.create(
                 department=department_data, position=position_data, surname=surname
