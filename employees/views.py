@@ -24,10 +24,13 @@ class PositionListView(generics.ListAPIView):
 
 
 class DepartmentListView(generics.ListAPIView):
-    """Get - Получить список всех отделов из таблицы: Department"""
+    """Get - Получить список уникальных отделов из таблицы Department"""
 
-    queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
+
+    def get_queryset(self):
+        # Возвращаем только уникальные отделы
+        return Department.objects.all().distinct('department')
 
 
 class EmployeeDetailView(generics.RetrieveAPIView):
@@ -46,7 +49,7 @@ class EmployeeWithPositionAndDepartmentListView(generics.ListAPIView):
 
 
 class EmployeeCreateView(generics.CreateAPIView):
-    """Post - Добавить сотрудника на существующую должность в существующий отдел"""
+    """Post - Добавить сотрудника с выбранной должностью и отделом, которые существуют"""
 
     serializer_class = EmployeeSerializer
 
@@ -66,11 +69,26 @@ class EmployeeCreateView(generics.CreateAPIView):
 
         # Проверка на существование отдела
         try:
-            department = Department.objects.get(department=department_data, position=position_data)
+            department = Department.objects.get(department=department_data)
         except Department.DoesNotExist:
             raise ValidationError({"department": "Указан несуществующий отдел."})
 
-        # Если проверки пройдены, создаю нового сотрудника
-        self.perform_create(employee_serializer)
+        # Сохраняем сотрудника
+        employee = employee_serializer.save()
 
-        return Response(employee_serializer.data, status=status.HTTP_201_CREATED)
+        # Связываем должность с employee_id в таблице должностей
+        Position.objects.filter(position=position_data).update(employee_id=employee.employee_id)
+
+        # Связываем отдел с employee_id в таблице отделов
+        Department.objects.filter(department=department_data).update(surname=employee.surname)
+
+        # Формируем ответ с данными сотрудника
+        response_data = {
+            "employee_id": employee.employee_id,
+            "name": employee.name,
+            "surname": employee.surname,
+            "position": position.position,
+            "department": department.department,
+        }
+
+        return Response(response_data, status=status.HTTP_201_CREATED)
