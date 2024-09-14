@@ -19,7 +19,7 @@ urlpatterns = [
         "employee/<int:employee_id>/",
         EmployeeDetailView.as_view(),
         name="employee-detail",
-    ),  # Получить данные сотрудника по id
+    ),  # Получить данные о сотруднике по id
     path(
         "employees-with-details/",
         EmployeeWithPositionAndDepartmentListView.as_view(),

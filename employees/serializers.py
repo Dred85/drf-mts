@@ -42,7 +42,7 @@ class EmployeeDetailSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_department(obj):
         try:
-            # Используем filter вместо get для получения всех отделов по фамилии
+            # Использовал filter вместо get для получения всех отделов по фамилии
             department = Department.objects.filter(surname=obj.surname).first()
             return department.department if department else None
         except Department.DoesNotExist:
@@ -60,7 +60,7 @@ class EmployeeWithPositionAndDepartmentSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_position(obj):
         try:
-            # Используем filter для получения всех позиций сотрудника
+            # Использовал filter для получения всех позиций сотрудника
             position = Position.objects.filter(employee_id=obj.employee_id).first()
             return position.position if position else None
         except Position.DoesNotExist:
@@ -69,7 +69,7 @@ class EmployeeWithPositionAndDepartmentSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_department(obj):
         try:
-            # Используем filter вместо get для получения всех отделов по фамилии
+            # Использовал filter вместо get для получения всех отделов по фамилии
             department = Department.objects.filter(surname=obj.surname).first()
             return department.department if department else None
         except Department.DoesNotExist:
