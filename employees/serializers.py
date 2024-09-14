@@ -18,7 +18,7 @@ class PositionSerializer(serializers.ModelSerializer):
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
-        fields = ["department", "position", "surname"]
+        fields = ["department"]
 
 
 class EmployeeDetailSerializer(serializers.ModelSerializer):
