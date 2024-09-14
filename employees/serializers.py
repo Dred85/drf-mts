@@ -105,7 +105,7 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
 
         # Проверка на существование записи в таблице должностей
         if not Position.objects.filter(
-                position=position_data, employee_id=employee.employee_id
+           position=position_data, employee_id=employee.employee_id
         ).exists():
             Position.objects.create(
                 position=position_data, employee_id=employee.employee_id
@@ -113,7 +113,7 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
 
         # Проверка на существование записи в таблице отделов
         if not Department.objects.filter(
-                department=department_data, position=position_data, surname=surname
+            department=department_data, position=position_data, surname=surname
         ).exists():
             Department.objects.create(
                 department=department_data, position=position_data, surname=surname
