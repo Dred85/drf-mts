@@ -16,6 +16,7 @@ class EmployeeListView(generics.ListAPIView):
     serializer_class = EmployeeSerializer
 
 
+
 class PositionListView(generics.ListAPIView):
     """Get - Получить список всех должностей из таблицы: Position"""
 
@@ -34,18 +35,39 @@ class DepartmentListView(generics.ListAPIView):
 
 
 class EmployeeDetailView(generics.RetrieveAPIView):
-    """Get - Получить данные одного сотрудника по id (Имя, Фамилия, Должность, Отдел)"""
+    """Get - Получить данные одного сотрудника по ID"""
 
-    queryset = Employee.objects.all()
     serializer_class = EmployeeDetailSerializer
-    lookup_field = "employee_id"
-
+    queryset = Employee.objects.all()
+    lookup_field = 'employee_id'
 
 class EmployeeWithPositionAndDepartmentListView(generics.ListAPIView):
-    """Get - Получить список всех сотрудников (id, Имя, Фамилия, Должность, Отдел)"""
+    """Get - Получить список всех сотрудников с должностью и отделом"""
 
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeWithPositionAndDepartmentSerializer
+    serializer_class = EmployeeSerializer
+
+    def list(self, request, *args, **kwargs):
+        employees = Employee.objects.all()
+        employee_data = []
+
+        for employee in employees:
+            # Получаем все должности и отделы для сотрудника
+            positions = Position.objects.filter(employee_id=employee.employee_id)
+            departments = Department.objects.filter(surname=employee.surname)
+
+            # Предполагаем, что у сотрудника может быть только одна должность и один отдел
+            position = positions.first() if positions.exists() else None
+            department = departments.first() if departments.exists() else None
+
+            employee_data.append({
+                "employee_id": employee.employee_id,
+                "name": employee.name,
+                "surname": employee.surname,
+                "position": position.position if position else None,
+                "department": department.department if department else None,
+            })
+
+        return Response(employee_data)
 
 
 class EmployeeCreateView(generics.CreateAPIView):
