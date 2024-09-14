@@ -1,7 +1,5 @@
 from django.db import models
 
-NULLABLE = {"blank": True, "null": True}
-
 
 class Employee(models.Model):
     """Модель, описывающая имя и фамилию сотрудника"""
@@ -11,7 +9,6 @@ class Employee(models.Model):
         max_length=100,
         verbose_name="Имя сотрудника",
         help_text="Укажите имя сотрудника",
-        **NULLABLE,
     )
     surname = models.CharField(
         max_length=100,
@@ -52,19 +49,19 @@ class Department(models.Model):
         max_length=150,
         verbose_name="Название департамента",
         help_text="Укажите название департамента",
-    )  # Название департамента
+    )
 
     position = models.CharField(
         max_length=150,
         verbose_name="Должность сотрудника",
         help_text="Укажите должность сотрудника",
-    )  # Должность сотрудника
+    )
 
     surname = models.CharField(
         max_length=150,
         verbose_name="Фамилия сотрудника",
         help_text="Укажите фамилию сотрудника",
-    )  # Фамилия сотрудника
+    )
 
     class Meta:
         verbose_name = "Отдел"
