@@ -50,14 +50,15 @@ class EmployeeWithPositionAndDepartmentSerializer(BaseEmployeeSerializer):
 
 
 class EmployeeCreateSerializer(serializers.ModelSerializer):
-    position = serializers.CharField(write_only=True)
-    department = serializers.CharField(write_only=True)
+    position = serializers.CharField(write_only=True)  # дополнительное поле, не связано напрямую с моделью Employee
+    department = serializers.CharField(write_only=True)  # дополнительное поле, не связано напрямую с моделью Employee
 
     class Meta:
         model = Employee
         fields = ["employee_id", "name", "surname", "position", "department"]
 
     def validate(self, data):
+        # из входных данных извлекаем нужную информацию
         name = data.get("name")
         surname = data.get("surname")
         position_data = data.get("position")
