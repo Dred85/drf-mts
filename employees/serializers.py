@@ -4,6 +4,25 @@ from .models import Department, Employee, Position
 from .validators import validate_employee_data
 
 
+class BaseEmployeeSerializer(serializers.ModelSerializer):
+    position = serializers.SerializerMethodField()
+    department = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Employee
+        fields = ["employee_id", "name", "surname", "position", "department"]
+
+    @staticmethod
+    def get_position(obj):
+        position = Position.objects.filter(employee_id=obj.employee_id).first()
+        return position.position if position else None
+
+    @staticmethod
+    def get_department(obj):
+        department = Department.objects.filter(surname=obj.surname).first()
+        return department.department if department else None
+
+
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
@@ -22,58 +41,12 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ["department"]
 
 
-class EmployeeDetailSerializer(serializers.ModelSerializer):
-    position = serializers.SerializerMethodField()
-    department = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Employee
-        fields = ["employee_id", "name", "surname", "position", "department"]
-
-    @staticmethod
-    def get_position(obj):
-        try:
-            # Используем filter для получения всех позиций сотрудника
-            position = Position.objects.filter(employee_id=obj.employee_id).first()
-            return position.position if position else None
-        except Position.DoesNotExist:
-            return None
-
-    @staticmethod
-    def get_department(obj):
-        try:
-            # Использовал filter вместо get для получения всех отделов по фамилии
-            department = Department.objects.filter(surname=obj.surname).first()
-            return department.department if department else None
-        except Department.DoesNotExist:
-            return None
+class EmployeeDetailSerializer(BaseEmployeeSerializer):
+    pass
 
 
-class EmployeeWithPositionAndDepartmentSerializer(serializers.ModelSerializer):
-    position = serializers.SerializerMethodField()
-    department = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Employee
-        fields = ["employee_id", "name", "surname", "position", "department"]
-
-    @staticmethod
-    def get_position(obj):
-        try:
-            # Использовал filter для получения всех позиций сотрудника
-            position = Position.objects.filter(employee_id=obj.employee_id).first()
-            return position.position if position else None
-        except Position.DoesNotExist:
-            return None
-
-    @staticmethod
-    def get_department(obj):
-        try:
-            # Использовал filter вместо get для получения всех отделов по фамилии
-            department = Department.objects.filter(surname=obj.surname).first()
-            return department.department if department else None
-        except Department.DoesNotExist:
-            return None
+class EmployeeWithPositionAndDepartmentSerializer(BaseEmployeeSerializer):
+    pass
 
 
 class EmployeeCreateSerializer(serializers.ModelSerializer):
@@ -94,29 +67,3 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
         validate_employee_data(name, surname, position_data, department_data)
 
         return data
-
-    def create(self, validated_data):
-        position_data = validated_data.pop("position")
-        department_data = validated_data.pop("department")
-        surname = validated_data.get("surname")
-
-        # Создаем сотрудника
-        employee = Employee.objects.create(**validated_data)
-
-        # Проверка на существование записи в таблице должностей
-        if not Position.objects.filter(
-           position=position_data, employee_id=employee.employee_id
-        ).exists():
-            Position.objects.create(
-                position=position_data, employee_id=employee.employee_id
-            )
-
-        # Проверка на существование записи в таблице отделов
-        if not Department.objects.filter(
-            department=department_data, position=position_data, surname=surname
-        ).exists():
-            Department.objects.create(
-                department=department_data, position=position_data, surname=surname
-            )
-
-        return employee
