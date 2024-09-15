@@ -16,12 +16,12 @@ class Employee(models.Model):
         help_text="Укажите фамилию сотрудника",
     )
 
+    def __str__(self):
+        return f"{self.name} {self.surname}"
+
     class Meta:
         verbose_name = "Сотрудник"
         verbose_name_plural = "Сотрудники"
-
-    def __str__(self):
-        return f"{self.name} {self.surname}"
 
 
 class Position(models.Model):
@@ -34,12 +34,12 @@ class Position(models.Model):
         help_text="Укажите должность сотрудника",
     )
 
+    def __str__(self):
+        return self.position
+
     class Meta:
         verbose_name = "Должность"
         verbose_name_plural = "Должности"
-
-    def __str__(self):
-        return self.position
 
 
 class Department(models.Model):
@@ -63,10 +63,10 @@ class Department(models.Model):
         help_text="Укажите фамилию сотрудника",
     )
 
+    def __str__(self):
+        return f"{self.department}:{self.position} - {self.surname}"
+
     class Meta:
         verbose_name = "Отдел"
         verbose_name_plural = "Отделы"
         unique_together = ("position", "surname")  # Уникальная связь должность-фамилия
-
-    def __str__(self):
-        return f"{self.department}:{self.position} - {self.surname}"

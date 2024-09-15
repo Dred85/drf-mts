@@ -2,14 +2,10 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 
 from .models import Department, Employee, Position
-from .serializers import (
-    DepartmentSerializer,
-    EmployeeCreateSerializer,
-    EmployeeDetailSerializer,
-    EmployeeSerializer,
-    EmployeeWithPositionAndDepartmentSerializer,
-    PositionSerializer,
-)
+from .serializers import (DepartmentSerializer, EmployeeCreateSerializer,
+                          EmployeeDetailSerializer, EmployeeSerializer,
+                          EmployeeWithPositionAndDepartmentSerializer,
+                          PositionSerializer)
 
 
 class EmployeeListView(generics.ListAPIView):
