@@ -24,6 +24,7 @@ class PositionListView(generics.ListAPIView):
 class DepartmentListView(generics.ListAPIView):
     """Get - Получить список уникальных отделов из таблицы Department"""
 
+    queryset = Department.objects.distinct("department")
     serializer_class = DepartmentSerializer
 
     def get_queryset(self):
