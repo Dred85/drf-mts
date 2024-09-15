@@ -42,13 +42,12 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 
 class EmployeeDetailSerializer(BaseEmployeeSerializer):
-    position = serializers.SerializerMethodField()
-    department = serializers.SerializerMethodField()
+    pass
+
 
 
 class EmployeeWithPositionAndDepartmentSerializer(BaseEmployeeSerializer):
-    position = serializers.SerializerMethodField()
-    department = serializers.SerializerMethodField()
+    pass
 
 
 class EmployeeCreateSerializer(serializers.ModelSerializer):
