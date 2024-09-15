@@ -51,3 +51,23 @@ class EmployeeCreateView(generics.CreateAPIView):
     """Post - Добавить сотрудника с выбранной должностью и отделом, которые существуют"""
 
     serializer_class = EmployeeCreateSerializer
+
+    def perform_create(self, serializer):
+        validated_data = serializer.validated_data
+        position_data = validated_data.pop("position")
+        department_data = validated_data.pop("department")
+        surname = validated_data.get("surname")
+
+        # Создаем сотрудника
+        employee = Employee.objects.create(**validated_data)
+
+        # Используем get_or_create для создания должностей и отделов
+        Position.objects.get_or_create(
+            position=position_data, employee_id=employee.employee_id
+        )
+
+        Department.objects.get_or_create(
+            department=department_data, position=position_data, surname=surname
+        )
+
+        return employee

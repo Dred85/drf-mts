@@ -45,7 +45,6 @@ class EmployeeDetailSerializer(BaseEmployeeSerializer):
     pass
 
 
-
 class EmployeeWithPositionAndDepartmentSerializer(BaseEmployeeSerializer):
     pass
 
@@ -68,22 +67,3 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
         validate_employee_data(name, surname, position_data, department_data)
 
         return data
-
-    def create(self, validated_data):
-        position_data = validated_data.pop("position")
-        department_data = validated_data.pop("department")
-        surname = validated_data.get("surname")
-
-        # Создаем сотрудника
-        employee = Employee.objects.create(**validated_data)
-
-        # Используем get_or_create для позиций и отделов
-        Position.objects.get_or_create(
-            position=position_data, employee_id=employee.employee_id
-        )
-
-        Department.objects.get_or_create(
-            department=department_data, position=position_data, surname=surname
-        )
-
-        return employee
