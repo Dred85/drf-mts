@@ -26,7 +26,7 @@ class BaseEmployeeSerializer(serializers.ModelSerializer):
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        fields = '__all__'
+        fields = "__all__"
 
 
 class PositionSerializer(serializers.ModelSerializer):
@@ -50,8 +50,12 @@ class EmployeeWithPositionAndDepartmentSerializer(BaseEmployeeSerializer):
 
 
 class EmployeeCreateSerializer(serializers.ModelSerializer):
-    position = serializers.CharField(write_only=True)  # дополнительное поле, не связано напрямую с моделью Employee
-    department = serializers.CharField(write_only=True)  # дополнительное поле, не связано напрямую с моделью Employee
+    position = serializers.CharField(
+        write_only=True
+    )  # дополнительное поле, не связано напрямую с моделью Employee
+    department = serializers.CharField(
+        write_only=True
+    )  # дополнительное поле, не связано напрямую с моделью Employee
 
     class Meta:
         model = Employee
