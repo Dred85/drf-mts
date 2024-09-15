@@ -1,10 +1,15 @@
 from rest_framework import generics
+from rest_framework.exceptions import ValidationError
 
 from .models import Department, Employee, Position
-from .serializers import (DepartmentSerializer, EmployeeCreateSerializer,
-                          EmployeeDetailSerializer, EmployeeSerializer,
-                          EmployeeWithPositionAndDepartmentSerializer,
-                          PositionSerializer)
+from .serializers import (
+    DepartmentSerializer,
+    EmployeeCreateSerializer,
+    EmployeeDetailSerializer,
+    EmployeeSerializer,
+    EmployeeWithPositionAndDepartmentSerializer,
+    PositionSerializer,
+)
 
 
 class EmployeeListView(generics.ListAPIView):
@@ -24,6 +29,7 @@ class PositionListView(generics.ListAPIView):
 class DepartmentListView(generics.ListAPIView):
     """Get - Получить список уникальных отделов из таблицы Department"""
 
+    queryset = Department.objects.distinct("department")
     serializer_class = DepartmentSerializer
 
     def get_queryset(self):
@@ -51,5 +57,30 @@ class EmployeeCreateView(generics.CreateAPIView):
 
     serializer_class = EmployeeCreateSerializer
 
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+    def perform_create(self, serializer):
+        validated_data = serializer.validated_data
+        position_data = validated_data.pop("position")
+        department_data = validated_data.pop("department")
+        surname = validated_data.get("surname")
+
+        # Создаем сотрудника
+        employee = Employee.objects.create(**validated_data)
+
+        # Создаем запись в таблице должностей, если её нет
+        Position.objects.get_or_create(
+            position=position_data, employee_id=employee.employee_id
+        )
+
+        # Проверяем существование записи в таблице отделов
+        # и создаем новую запись, если такой комбинации нет
+        department, created = Department.objects.get_or_create(
+            department=department_data, position=position_data, surname=surname
+        )
+
+        if not created:
+            # Если запись уже существует, выбрасываем исключение
+            raise ValidationError(
+                {"detail": "Такой отдел с данной должностью и фамилией уже существует."}
+            )
+
+        return employee
