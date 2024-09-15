@@ -1,10 +1,15 @@
 from rest_framework import generics
+from rest_framework.exceptions import ValidationError
 
 from .models import Department, Employee, Position
-from .serializers import (DepartmentSerializer, EmployeeCreateSerializer,
-                          EmployeeDetailSerializer, EmployeeSerializer,
-                          EmployeeWithPositionAndDepartmentSerializer,
-                          PositionSerializer)
+from .serializers import (
+    DepartmentSerializer,
+    EmployeeCreateSerializer,
+    EmployeeDetailSerializer,
+    EmployeeSerializer,
+    EmployeeWithPositionAndDepartmentSerializer,
+    PositionSerializer,
+)
 
 
 class EmployeeListView(generics.ListAPIView):
@@ -61,13 +66,21 @@ class EmployeeCreateView(generics.CreateAPIView):
         # Создаем сотрудника
         employee = Employee.objects.create(**validated_data)
 
-        # Используем get_or_create для создания должностей и отделов
+        # Создаем запись в таблице должностей, если её нет
         Position.objects.get_or_create(
             position=position_data, employee_id=employee.employee_id
         )
 
-        Department.objects.get_or_create(
+        # Проверяем существование записи в таблице отделов
+        # и создаем новую запись, если такой комбинации нет
+        department, created = Department.objects.get_or_create(
             department=department_data, position=position_data, surname=surname
         )
+
+        if not created:
+            # Если запись уже существует, выбрасываем исключение
+            raise ValidationError(
+                {"detail": "Такой отдел с данной должностью и фамилией уже существует."}
+            )
 
         return employee
