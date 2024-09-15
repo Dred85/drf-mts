@@ -78,20 +78,13 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
         # Создаем сотрудника
         employee = Employee.objects.create(**validated_data)
 
-        # Проверка на существование записи в таблице должностей
-        if not Position.objects.filter(
-                position=position_data, employee_id=employee.employee_id
-        ).exists():
-            Position.objects.create(
-                position=position_data, employee_id=employee.employee_id
-            )
+        # Используем get_or_create для позиций и отделов
+        Position.objects.get_or_create(
+            position=position_data, employee_id=employee.employee_id
+        )
 
-        # Проверка на существование записи в таблице отделов
-        if not Department.objects.filter(
-                department=department_data, position=position_data, surname=surname
-        ).exists():
-            Department.objects.create(
-                department=department_data, position=position_data, surname=surname
-            )
+        Department.objects.get_or_create(
+            department=department_data, position=position_data, surname=surname
+        )
 
         return employee
