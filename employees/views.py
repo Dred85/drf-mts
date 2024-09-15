@@ -50,6 +50,3 @@ class EmployeeCreateView(generics.CreateAPIView):
     """Post - Добавить сотрудника с выбранной должностью и отделом, которые существуют"""
 
     serializer_class = EmployeeCreateSerializer
-
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
